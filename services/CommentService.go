@@ -6,11 +6,11 @@ import (
 )
 
 type CommentService struct {
-	repository repositories.ICommentRepository
+	Repository repositories.ICommentRepository
 }
 
 func (service CommentService) Create(comment models.CommentModel) (*models.CommentModel, error) {
-	newComment, err := service.repository.Create(comment)
+	newComment, err := service.Repository.Add(comment)
 	if err != nil {
 		return nil, err
 	}
@@ -19,19 +19,19 @@ func (service CommentService) Create(comment models.CommentModel) (*models.Comme
 }
 
 func (service CommentService) GetById(id uint) (*models.CommentModel, error) {
-	return service.repository.GetById(id)
+	return service.Repository.FindById(id)
 }
 
 func (service CommentService) GetByTaskId(id uint) ([]models.CommentModel, error) {
-	return service.repository.GetByTaskId(id)
+	return service.Repository.FindByTaskId(id)
 }
 
 func (service CommentService) Update(comment models.CommentModel) (*models.CommentModel, error) {
-	return service.repository.Update(comment)
+	return service.Repository.Update(comment)
 }
 
 func (service CommentService) DeleteById(id uint) error {
-	return service.repository.DeleteById(id)
+	return service.Repository.DeleteById(id)
 }
 
 

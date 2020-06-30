@@ -7,19 +7,19 @@ type ProjectRepository struct {
 }
 
 type IProjectRepository interface {
-	Create(project models.ProjectModel) (*models.ProjectModel, error)
-	GetById(id uint) (*models.ProjectModel, error)
-	GetList() ([]models.ProjectModel, error)
+	Add(project models.ProjectModel) (*models.ProjectModel, error)
+	FindById(id uint) (*models.ProjectModel, error)
+	FindAll() ([]models.ProjectModel, error)
 	Update(project models.ProjectModel) (*models.ProjectModel, error)
 	DeleteById(id uint) error
 }
 
-func (repository ProjectRepository) Create(project models.ProjectModel) (*models.ProjectModel, error) {
+func (repository ProjectRepository) Add(project models.ProjectModel) (*models.ProjectModel, error) {
 	project.Id = 1
 	return &project, nil
 }
 
-func (repository ProjectRepository) GetById(id uint) (*models.ProjectModel, error) {
+func (repository ProjectRepository) FindById(id uint) (*models.ProjectModel, error) {
 	project := &models.ProjectModel{
 		Id:          1,
 		Name:        "test",
@@ -29,7 +29,7 @@ func (repository ProjectRepository) GetById(id uint) (*models.ProjectModel, erro
 	return project, nil
 }
 
-func (repository ProjectRepository) GetList() ([]models.ProjectModel, error) {
+func (repository ProjectRepository) FindAll() ([]models.ProjectModel, error) {
 	projects := []models.ProjectModel{models.ProjectModel{
 		Id:          1,
 		Name:        "test",

@@ -6,11 +6,11 @@ import (
 )
 
 type ColumnService struct {
-	repository repositories.IColumnRepository
+	Repository repositories.IColumnRepository
 }
 
 func (service ColumnService) Create(column models.ColumnModel) (*models.ColumnModel, error) {
-	newColumn, err := service.repository.Create(column)
+	newColumn, err := service.Repository.Add(column)
 	if err != nil {
 		return nil, err
 	}
@@ -19,17 +19,17 @@ func (service ColumnService) Create(column models.ColumnModel) (*models.ColumnMo
 }
 
 func (service ColumnService) GetById(id uint) (*models.ColumnModel, error) {
-	return service.repository.GetById(id)
+	return service.Repository.FindById(id)
 }
 
 func (service ColumnService) GetByProjectId(id uint) ([]models.ColumnModel, error) {
-	return service.repository.GetByProjectId(id)
+	return service.Repository.FindByProjectId(id)
 }
 
 func (service ColumnService) Update(column models.ColumnModel) (*models.ColumnModel, error) {
-	return service.repository.Update(column)
+	return service.Repository.Update(column)
 }
 
 func (service ColumnService) DeleteById(id uint) error {
-	return service.repository.DeleteById(id)
+	return service.Repository.DeleteById(id)
 }

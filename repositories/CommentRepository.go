@@ -10,19 +10,19 @@ type CommentRepository struct {
 }
 
 type ICommentRepository interface {
-	Create(comment models.CommentModel) (*models.CommentModel, error)
-	GetById(id uint) (*models.CommentModel, error)
-	GetByTaskId(id uint) ([]models.CommentModel, error)
+	Add(comment models.CommentModel) (*models.CommentModel, error)
+	FindById(id uint) (*models.CommentModel, error)
+	FindByTaskId(id uint) ([]models.CommentModel, error)
 	Update(comment models.CommentModel) (*models.CommentModel, error)
 	DeleteById(id uint) error
 }
 
-func (repository CommentRepository) Create(comment models.CommentModel) (*models.CommentModel, error) {
+func (repository CommentRepository) Add(comment models.CommentModel) (*models.CommentModel, error) {
 	comment.Id = 1
 	return &comment, nil
 }
 
-func (repository CommentRepository) GetById(id uint) (*models.CommentModel, error) {
+func (repository CommentRepository) FindById(id uint) (*models.CommentModel, error) {
 	task := &models.CommentModel{
 		Id:        id,
 		Text:      "test",
@@ -33,7 +33,7 @@ func (repository CommentRepository) GetById(id uint) (*models.CommentModel, erro
 	return task, nil
 }
 
-func (repository CommentRepository) GetByTaskId(id uint) ([]models.CommentModel, error) {
+func (repository CommentRepository) FindByTaskId(id uint) ([]models.CommentModel, error) {
 	comments := []models.CommentModel{models.CommentModel{
 		Id:        1,
 		Text:      "test",

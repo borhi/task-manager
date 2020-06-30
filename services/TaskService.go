@@ -6,11 +6,11 @@ import (
 )
 
 type TaskService struct {
-	repository repositories.ITaskRepository
+	Repository repositories.ITaskRepository
 }
 
 func (service TaskService) Create(task models.TaskModel) (*models.TaskModel, error) {
-	newTask, err := service.repository.Create(task)
+	newTask, err := service.Repository.Add(task)
 	if err != nil {
 		return nil, err
 	}
@@ -19,17 +19,17 @@ func (service TaskService) Create(task models.TaskModel) (*models.TaskModel, err
 }
 
 func (service TaskService) GetById(id uint) (*models.TaskModel, error) {
-	return service.repository.GetById(id)
+	return service.Repository.FindById(id)
 }
 
 func (service TaskService) GetByColumnId(id uint) ([]models.TaskModel, error) {
-	return service.repository.GetByColumnId(id)
+	return service.Repository.FindByColumnId(id)
 }
 
 func (service TaskService) Update(task models.TaskModel) (*models.TaskModel, error) {
-	return service.repository.Update(task)
+	return service.Repository.Update(task)
 }
 
 func (service TaskService) DeleteById(id uint) error {
-	return service.repository.DeleteById(id)
+	return service.Repository.DeleteById(id)
 }

@@ -11,7 +11,7 @@ type ProjectService struct {
 }
 
 func (service ProjectService) Create(project models.ProjectModel) (*models.ProjectModel, error) {
-	newProject, err := service.ProjectRepository.Create(project)
+	newProject, err := service.ProjectRepository.Add(project)
 	if err != nil {
 		return nil, err
 	}
@@ -22,7 +22,7 @@ func (service ProjectService) Create(project models.ProjectModel) (*models.Proje
 		ProjectId: newProject.Id,
 	}
 
-	_, err = service.ColumnRepository.Create(column)
+	_, err = service.ColumnRepository.Add(column)
 	if err != nil {
 		return nil, err
 	}
@@ -31,11 +31,11 @@ func (service ProjectService) Create(project models.ProjectModel) (*models.Proje
 }
 
 func (service ProjectService) GetById(id uint) (*models.ProjectModel, error) {
-	return service.ProjectRepository.GetById(id)
+	return service.ProjectRepository.FindById(id)
 }
 
 func (service ProjectService) GetList() ([]models.ProjectModel, error) {
-	return service.ProjectRepository.GetList()
+	return service.ProjectRepository.FindAll()
 }
 
 func (service ProjectService) Update(project models.ProjectModel) (*models.ProjectModel, error) {
