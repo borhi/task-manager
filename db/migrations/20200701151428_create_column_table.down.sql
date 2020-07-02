@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS column;
+DROP TABLE IF EXISTS "column";
