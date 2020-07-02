@@ -76,7 +76,7 @@ func (repository CommentRepository) FindByTaskId(id int64) ([]*models.CommentMod
 func (repository CommentRepository) Update(comment models.CommentModel) (*models.CommentModel, error) {
 	rows, err := repository.Query(fmt.Sprintf(
 		"UPDATE comment SET text='%s', task_id=%d WHERE id=%d RETURNING id, text, created_at, task_id",
-		comment.Text, comment.TaskId,
+		comment.Text, comment.TaskId, comment.Id,
 	))
 	if err != nil {
 		return nil, err
