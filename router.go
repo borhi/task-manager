@@ -7,9 +7,13 @@ import (
 )
 
 type router struct {
+	projectHandler *handlers.ProjectHandler
+	columnHandler  *handlers.ColumnHandler
+	taskHandler    *handlers.TaskHandler
+	commentHandler *handlers.CommentHandler
 }
 
-func (router *router) InitRouter() *mux.Router {
+func (router router) InitRouter() *mux.Router {
 	r := mux.NewRouter()
 
 	fs := http.FileServer(http.Dir("./swaggerui/"))
@@ -17,33 +21,29 @@ func (router *router) InitRouter() *mux.Router {
 
 	s := r.PathPrefix("/v1").Subrouter()
 
-	projectHandler := handlers.NewProjectHandler()
-	s.HandleFunc("/projects", projectHandler.GetList).Methods(http.MethodGet)
-	s.HandleFunc("/project/{id}", projectHandler.Get).Methods(http.MethodGet)
-	s.HandleFunc("/project", projectHandler.Create).Methods(http.MethodPost)
-	s.HandleFunc("/project/{id}", projectHandler.Update).Methods(http.MethodPut)
-	s.HandleFunc("/project/{id}", projectHandler.Delete).Methods(http.MethodDelete)
+	s.HandleFunc("/projects", router.projectHandler.GetList).Methods(http.MethodGet)
+	s.HandleFunc("/project/{id}", router.projectHandler.Get).Methods(http.MethodGet)
+	s.HandleFunc("/project", router.projectHandler.Create).Methods(http.MethodPost)
+	s.HandleFunc("/project", router.projectHandler.Update).Methods(http.MethodPut)
+	s.HandleFunc("/project/{id}", router.projectHandler.Delete).Methods(http.MethodDelete)
 
-	columnHandler := handlers.NewColumnHandler()
-	s.HandleFunc("/columns/{projectId}", columnHandler.GetByProjectId).Methods(http.MethodGet)
-	s.HandleFunc("/column/{id}", columnHandler.Get).Methods(http.MethodGet)
-	s.HandleFunc("/column", columnHandler.Create).Methods(http.MethodPost)
-	s.HandleFunc("/column/{id}", columnHandler.Update).Methods(http.MethodPut)
-	s.HandleFunc("/column/{id}", columnHandler.Delete).Methods(http.MethodDelete)
+	s.HandleFunc("/columns/{projectId}", router.columnHandler.GetByProjectId).Methods(http.MethodGet)
+	s.HandleFunc("/column/{id}", router.columnHandler.Get).Methods(http.MethodGet)
+	s.HandleFunc("/column", router.columnHandler.Create).Methods(http.MethodPost)
+	s.HandleFunc("/column", router.columnHandler.Update).Methods(http.MethodPut)
+	s.HandleFunc("/column/{id}", router.columnHandler.Delete).Methods(http.MethodDelete)
 
-	taskHandler := handlers.NewTaskHandler()
-	s.HandleFunc("/tasks/{columnId}", taskHandler.GetByColumnId).Methods(http.MethodGet)
-	s.HandleFunc("/task/{id}", taskHandler.Get).Methods(http.MethodGet)
-	s.HandleFunc("/task", taskHandler.Create).Methods(http.MethodPost)
-	s.HandleFunc("/task/{id}", taskHandler.Update).Methods(http.MethodPut)
-	s.HandleFunc("/task/{id}", taskHandler.Delete).Methods(http.MethodDelete)
+	s.HandleFunc("/tasks/{columnId}", router.taskHandler.GetByColumnId).Methods(http.MethodGet)
+	s.HandleFunc("/task/{id}", router.taskHandler.Get).Methods(http.MethodGet)
+	s.HandleFunc("/task", router.taskHandler.Create).Methods(http.MethodPost)
+	s.HandleFunc("/task", router.taskHandler.Update).Methods(http.MethodPut)
+	s.HandleFunc("/task/{id}", router.taskHandler.Delete).Methods(http.MethodDelete)
 
-	commentHandler := handlers.NewCommentHandler()
-	s.HandleFunc("/comments/{taskId}", commentHandler.GetByTaskId).Methods(http.MethodGet)
-	s.HandleFunc("/comment/{id}", commentHandler.Get).Methods(http.MethodGet)
-	s.HandleFunc("/comment", commentHandler.Create).Methods(http.MethodPost)
-	s.HandleFunc("/comment/{id}", commentHandler.Update).Methods(http.MethodPut)
-	s.HandleFunc("/comment/{id}", commentHandler.Delete).Methods(http.MethodDelete)
+	s.HandleFunc("/comments/{taskId}", router.commentHandler.GetByTaskId).Methods(http.MethodGet)
+	s.HandleFunc("/comment/{id}", router.commentHandler.Get).Methods(http.MethodGet)
+	s.HandleFunc("/comment", router.commentHandler.Create).Methods(http.MethodPost)
+	s.HandleFunc("/comment", router.commentHandler.Update).Methods(http.MethodPut)
+	s.HandleFunc("/comment/{id}", router.commentHandler.Delete).Methods(http.MethodDelete)
 
 	return r
 }

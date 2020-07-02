@@ -7,6 +7,7 @@ import (
 	"go.uber.org/zap"
 	"net/http"
 	"strconv"
+	"task-manager/adapters"
 	"task-manager/models"
 	"task-manager/repositories"
 	"task-manager/services"
@@ -17,10 +18,10 @@ type ColumnHandler struct {
 	validator *validator.Validate
 }
 
-func NewColumnHandler() *ColumnHandler {
+func NewColumnHandler(adapter adapters.IDbAdapter) *ColumnHandler {
 	return &ColumnHandler{
 		service: services.ColumnService{
-			Repository: repositories.ColumnRepository{},
+			Repository: repositories.ColumnRepository{IDbAdapter: adapter},
 		},
 		validator: validator.New(),
 	}
@@ -28,14 +29,14 @@ func NewColumnHandler() *ColumnHandler {
 
 func (handler ColumnHandler) GetByProjectId(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
-	projectId, err := strconv.ParseUint(vars["projectId"], 10, 64)
+	projectId, err := strconv.ParseInt(vars["projectId"], 10, 64)
 	if err != nil {
 		zap.L().Error(err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	columns, err := handler.service.GetByProjectId(uint(projectId))
+	columns, err := handler.service.GetByProjectId(projectId)
 	if err != nil {
 		zap.L().Error(err.Error())
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -51,14 +52,14 @@ func (handler ColumnHandler) GetByProjectId(w http.ResponseWriter, req *http.Req
 
 func (handler ColumnHandler) Get(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
-	id, err := strconv.ParseUint(vars["id"], 10, 64)
+	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
 		zap.L().Error(err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	project, err := handler.service.GetById(uint(id))
+	project, err := handler.service.GetById(id)
 	if err != nil {
 		zap.L().Error(err.Error())
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -119,10 +120,10 @@ func (handler ColumnHandler) Update(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	updatedColumn, err := handler.service.Create(column)
+	updatedColumn, err := handler.service.Update(column)
 	if err != nil {
 		zap.L().Error(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
@@ -135,14 +136,14 @@ func (handler ColumnHandler) Update(w http.ResponseWriter, req *http.Request) {
 
 func (handler ColumnHandler) Delete(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
-	id, err := strconv.ParseUint(vars["id"], 10, 64)
+	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
 		zap.L().Error(err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	err = handler.service.DeleteById(uint(id))
+	err = handler.service.DeleteById(id)
 	if err != nil {
 		zap.L().Error(err.Error())
 		http.Error(w, err.Error(), http.StatusNotFound)

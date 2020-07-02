@@ -18,11 +18,11 @@ func (service TaskService) Create(task models.TaskModel) (*models.TaskModel, err
 	return newTask, nil
 }
 
-func (service TaskService) GetById(id uint) (*models.TaskModel, error) {
+func (service TaskService) GetById(id int64) (*models.TaskModel, error) {
 	return service.Repository.FindById(id)
 }
 
-func (service TaskService) GetByColumnId(id uint) ([]models.TaskModel, error) {
+func (service TaskService) GetByColumnId(id int64) ([]*models.TaskModel, error) {
 	return service.Repository.FindByColumnId(id)
 }
 
@@ -30,6 +30,6 @@ func (service TaskService) Update(task models.TaskModel) (*models.TaskModel, err
 	return service.Repository.Update(task)
 }
 
-func (service TaskService) DeleteById(id uint) error {
+func (service TaskService) DeleteById(id int64) error {
 	return service.Repository.DeleteById(id)
 }

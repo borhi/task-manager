@@ -18,11 +18,11 @@ func (service ColumnService) Create(column models.ColumnModel) (*models.ColumnMo
 	return newColumn, nil
 }
 
-func (service ColumnService) GetById(id uint) (*models.ColumnModel, error) {
+func (service ColumnService) GetById(id int64) (*models.ColumnModel, error) {
 	return service.Repository.FindById(id)
 }
 
-func (service ColumnService) GetByProjectId(id uint) ([]models.ColumnModel, error) {
+func (service ColumnService) GetByProjectId(id int64) ([]*models.ColumnModel, error) {
 	return service.Repository.FindByProjectId(id)
 }
 
@@ -30,6 +30,6 @@ func (service ColumnService) Update(column models.ColumnModel) (*models.ColumnMo
 	return service.Repository.Update(column)
 }
 
-func (service ColumnService) DeleteById(id uint) error {
+func (service ColumnService) DeleteById(id int64) error {
 	return service.Repository.DeleteById(id)
 }
