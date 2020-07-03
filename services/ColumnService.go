@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"task-manager/models"
 	"task-manager/repositories"
 )
@@ -10,6 +11,17 @@ type ColumnService struct {
 }
 
 func (service ColumnService) Create(column models.ColumnModel) (*models.ColumnModel, error) {
+	columns, err := service.GetByProjectId(column.ProjectId)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, v := range columns {
+		if v.Name == column.Name {
+			return nil, errors.New("name per project must be unique")
+		}
+	}
+
 	newColumn, err := service.Repository.Add(column)
 	if err != nil {
 		return nil, err
