@@ -1,4 +1,4 @@
-For run app:
+Edit .env.template file, rename it to .env and run:
 
 `make build && make start && make migrate-up`
 
