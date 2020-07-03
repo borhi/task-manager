@@ -1,0 +1,7 @@
+.git
+.cache
+.DS_Store
+.idea/
+README.md
+vendor/
+docker-compose.yml
