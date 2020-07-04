@@ -6,3 +6,4 @@ README.md
 vendor/
 docker-compose.yml
 migrate.darwin-amd64
+migrate.linux-amd64
