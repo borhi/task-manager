@@ -2,9 +2,13 @@ Edit .env.template file, rename it to .env and run:
 
 `make build && make start && make migrate-up`
 
-For stop app:
+Stop app:
 
 `make stop`
+
+Run tests:
+
+`make test`
 
 Swagger url:
 

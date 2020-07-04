@@ -73,7 +73,8 @@ func (repository ColumnRepository) FindByProjectId(id int64) ([]*models.ColumnMo
 
 func (repository ColumnRepository) Update(column models.ColumnModel) (*models.ColumnModel, error) {
 	rows, err := repository.Query(fmt.Sprintf(
-		"UPDATE \"column\" SET name='%s', position=%d, project_id=%d WHERE id=%d ",
+		"UPDATE \"column\" SET name='%s', position=%d, project_id=%d WHERE id=%d " +
+			"RETURNING id, name, position, project_id;",
 		column.Name, column.Position, column.ProjectId, column.Id,
 	))
 	if err != nil {
