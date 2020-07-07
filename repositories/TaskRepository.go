@@ -62,7 +62,7 @@ func (repository TaskRepository) FindById(id int64) (*models.TaskModel, error) {
 }
 
 func (repository TaskRepository) FindByColumnId(id int64) ([]*models.TaskModel, error) {
-	rows, err := repository.Query(fmt.Sprintf("SELECT * FROM task WHERE column_id = %d", id))
+	rows, err := repository.Query(fmt.Sprintf("SELECT * FROM task WHERE column_id = %d ORDER BY position", id))
 	if err != nil {
 		return nil, err
 	}
