@@ -55,7 +55,10 @@ func (repository CommentRepository) FindById(id int64) (*models.CommentModel, er
 }
 
 func (repository CommentRepository) FindByTaskId(id int64) ([]*models.CommentModel, error) {
-	rows, err := repository.Query(fmt.Sprintf("SELECT * FROM comment WHERE task_id = %d", id))
+	rows, err := repository.Query(fmt.Sprintf(
+		"SELECT * FROM comment WHERE task_id = %d ORDER BY created_at DESC",
+		id,
+	))
 	if err != nil {
 		return nil, err
 	}

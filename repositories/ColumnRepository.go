@@ -53,7 +53,10 @@ func (repository ColumnRepository) FindById(id int64) (*models.ColumnModel, erro
 }
 
 func (repository ColumnRepository) FindByProjectId(id int64) ([]*models.ColumnModel, error) {
-	rows, err := repository.Query(fmt.Sprintf("SELECT * FROM \"column\" WHERE project_id = %d", id))
+	rows, err := repository.Query(fmt.Sprintf(
+		"SELECT * FROM \"column\" WHERE project_id = %d ORDER BY position",
+		id,
+	))
 	if err != nil {
 		return nil, err
 	}
