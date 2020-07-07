@@ -22,7 +22,7 @@ type ICommentRepository interface {
 
 func (repository CommentRepository) Add(comment models.CommentModel) (*models.CommentModel, error) {
 	rows, err := repository.Query(fmt.Sprintf(
-		"INSERT INTO comment (text, created_at, task_id) values ('%s', current_timestamp, %d) " +
+		"INSERT INTO comment (text, created_at, task_id) values ('%s', current_timestamp, %d) "+
 			"RETURNING id, text, created_at, task_id",
 		comment.Text, comment.TaskId,
 	))
@@ -55,7 +55,10 @@ func (repository CommentRepository) FindById(id int64) (*models.CommentModel, er
 }
 
 func (repository CommentRepository) FindByTaskId(id int64) ([]*models.CommentModel, error) {
-	rows, err := repository.Query(fmt.Sprintf("SELECT * FROM comment WHERE column_id = %d", id))
+	rows, err := repository.Query(fmt.Sprintf(
+		"SELECT * FROM comment WHERE column_id = %d ORDER BY created_at DESC",
+		id,
+	))
 	if err != nil {
 		return nil, err
 	}
