@@ -8,5 +8,5 @@ FROM alpine:latest
 COPY --from=build /src/task-manager/.env .
 COPY --from=build /src/task-manager/task-manager .
 COPY --from=build /src/task-manager/swaggerui ./swaggerui
-CMD ["./task-manager", "-port", "3000"]
+CMD ["./task-manager"]
 EXPOSE 3000
