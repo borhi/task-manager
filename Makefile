@@ -1,4 +1,4 @@
-MIGRATE=./migrate.darwin-amd64 -path db/migrations -database postgres://postgres:manager@localhost:5432/task_manager?sslmode=disable
+MIGRATE=./migrate -path db/migrations -database postgres://postgres:manager@db:5432/task_manager?sslmode=disable
 TEST_MIGRATE=./migrate.darwin-amd64 -path db/migrations -database postgres://postgres:manager@localhost:5432/test_task_manager?sslmode=disable
 
 .PHONY: build start stop down migrate-up migrate-down
@@ -16,7 +16,7 @@ down: ## Down docker containers
 	docker-compose down
 
 migrate-up: ## Run migrations
-	$(MIGRATE) up
+	docker-compose exec app $(MIGRATE) up
 
 migrate-down: ## Rollback migrations
-	$(MIGRATE) down
+	docker-compose exec app $(MIGRATE) down
