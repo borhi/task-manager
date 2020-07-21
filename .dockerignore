@@ -5,4 +5,5 @@
 README.md
 vendor/
 docker-compose.yml
+docker-compose.test.yml
 migrate.darwin-amd64

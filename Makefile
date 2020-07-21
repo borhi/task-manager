@@ -13,7 +13,7 @@ stop: ## Stop docker containers
 	docker-compose stop
 
 down: ## Down docker containers
-	docker-compose down
+	docker-compose down --volumes
 
 migrate-up: ## Run migrations
 	docker-compose exec app $(MIGRATE) up
