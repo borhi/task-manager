@@ -7,6 +7,7 @@ import (
 	"go.uber.org/zap"
 	"net/http"
 	"strconv"
+	"task-manager/adapters"
 	"task-manager/models"
 	"task-manager/repositories"
 	"task-manager/services"
@@ -17,11 +18,11 @@ type ProjectHandler struct {
 	validator *validator.Validate
 }
 
-func NewProjectHandler() *ProjectHandler {
+func NewProjectHandler(adapter adapters.IDbAdapter) *ProjectHandler {
 	return &ProjectHandler{
 		service: services.ProjectService{
-			ProjectRepository: repositories.ProjectRepository{},
-			ColumnRepository:  repositories.ColumnRepository{},
+			ProjectRepository: repositories.ProjectRepository{IDbAdapter: adapter},
+			ColumnRepository:  repositories.ColumnRepository{IDbAdapter: adapter},
 		},
 		validator: validator.New(),
 	}
@@ -44,14 +45,14 @@ func (handler ProjectHandler) GetList(w http.ResponseWriter, req *http.Request) 
 
 func (handler ProjectHandler) Get(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
-	id, err := strconv.ParseUint(vars["id"], 10, 64)
+	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
 		zap.L().Error(err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	project, err := handler.service.GetById(uint(id))
+	project, err := handler.service.GetById(id)
 	if err != nil {
 		zap.L().Error(err.Error())
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -112,10 +113,10 @@ func (handler ProjectHandler) Update(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	updatedProject, err := handler.service.Create(project)
+	updatedProject, err := handler.service.Update(project)
 	if err != nil {
 		zap.L().Error(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
@@ -128,14 +129,14 @@ func (handler ProjectHandler) Update(w http.ResponseWriter, req *http.Request) {
 
 func (handler ProjectHandler) Delete(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
-	id, err := strconv.ParseUint(vars["id"], 10, 64)
+	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
 		zap.L().Error(err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	err = handler.service.DeleteById(uint(id))
+	err = handler.service.DeleteById(id)
 	if err != nil {
 		zap.L().Error(err.Error())
 		http.Error(w, err.Error(), http.StatusNotFound)

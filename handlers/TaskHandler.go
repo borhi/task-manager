@@ -7,6 +7,7 @@ import (
 	"go.uber.org/zap"
 	"net/http"
 	"strconv"
+	"task-manager/adapters"
 	"task-manager/models"
 	"task-manager/repositories"
 	"task-manager/services"
@@ -17,10 +18,10 @@ type TaskHandler struct {
 	validator *validator.Validate
 }
 
-func NewTaskHandler() *TaskHandler {
+func NewTaskHandler(adapter adapters.IDbAdapter) *TaskHandler {
 	return &TaskHandler{
 		service: services.TaskService{
-			Repository: repositories.TaskRepository{},
+			Repository: repositories.TaskRepository{IDbAdapter: adapter},
 		},
 		validator: validator.New(),
 	}
@@ -28,14 +29,14 @@ func NewTaskHandler() *TaskHandler {
 
 func (handler TaskHandler) GetByColumnId(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
-	columnId, err := strconv.ParseUint(vars["columnId"], 10, 64)
+	columnId, err := strconv.ParseInt(vars["columnId"], 10, 64)
 	if err != nil {
 		zap.L().Error(err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	tasks, err := handler.service.GetByColumnId(uint(columnId))
+	tasks, err := handler.service.GetByColumnId(columnId)
 	if err != nil {
 		zap.L().Error(err.Error())
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -51,14 +52,14 @@ func (handler TaskHandler) GetByColumnId(w http.ResponseWriter, req *http.Reques
 
 func (handler TaskHandler) Get(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
-	id, err := strconv.ParseUint(vars["id"], 10, 64)
+	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
 		zap.L().Error(err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	task, err := handler.service.GetById(uint(id))
+	task, err := handler.service.GetById(id)
 	if err != nil {
 		zap.L().Error(err.Error())
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -119,10 +120,10 @@ func (handler TaskHandler) Update(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	updatedTask, err := handler.service.Create(task)
+	updatedTask, err := handler.service.Update(task)
 	if err != nil {
 		zap.L().Error(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
@@ -135,14 +136,14 @@ func (handler TaskHandler) Update(w http.ResponseWriter, req *http.Request) {
 
 func (handler TaskHandler) Delete(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
-	id, err := strconv.ParseUint(vars["id"], 10, 64)
+	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
 		zap.L().Error(err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	err = handler.service.DeleteById(uint(id))
+	err = handler.service.DeleteById(id)
 	if err != nil {
 		zap.L().Error(err.Error())
 		http.Error(w, err.Error(), http.StatusNotFound)

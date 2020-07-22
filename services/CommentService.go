@@ -18,11 +18,11 @@ func (service CommentService) Create(comment models.CommentModel) (*models.Comme
 	return newComment, nil
 }
 
-func (service CommentService) GetById(id uint) (*models.CommentModel, error) {
+func (service CommentService) GetById(id int64) (*models.CommentModel, error) {
 	return service.Repository.FindById(id)
 }
 
-func (service CommentService) GetByTaskId(id uint) ([]models.CommentModel, error) {
+func (service CommentService) GetByTaskId(id int64) ([]*models.CommentModel, error) {
 	return service.Repository.FindByTaskId(id)
 }
 
@@ -30,7 +30,7 @@ func (service CommentService) Update(comment models.CommentModel) (*models.Comme
 	return service.Repository.Update(comment)
 }
 
-func (service CommentService) DeleteById(id uint) error {
+func (service CommentService) DeleteById(id int64) error {
 	return service.Repository.DeleteById(id)
 }
 

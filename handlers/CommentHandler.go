@@ -7,6 +7,7 @@ import (
 	"go.uber.org/zap"
 	"net/http"
 	"strconv"
+	"task-manager/adapters"
 	"task-manager/models"
 	"task-manager/repositories"
 	"task-manager/services"
@@ -17,10 +18,10 @@ type CommentHandler struct {
 	validator *validator.Validate
 }
 
-func NewCommentHandler() *CommentHandler {
+func NewCommentHandler(adapter adapters.IDbAdapter) *CommentHandler {
 	return &CommentHandler{
 		service: services.CommentService{
-			Repository: repositories.CommentRepository{},
+			Repository: repositories.CommentRepository{IDbAdapter: adapter},
 		},
 		validator: validator.New(),
 	}
@@ -28,14 +29,14 @@ func NewCommentHandler() *CommentHandler {
 
 func (handler CommentHandler) GetByTaskId(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
-	commentId, err := strconv.ParseUint(vars["taskId"], 10, 64)
+	commentId, err := strconv.ParseInt(vars["taskId"], 10, 64)
 	if err != nil {
 		zap.L().Error(err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	comments, err := handler.service.GetByTaskId(uint(commentId))
+	comments, err := handler.service.GetByTaskId(commentId)
 	if err != nil {
 		zap.L().Error(err.Error())
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -51,14 +52,14 @@ func (handler CommentHandler) GetByTaskId(w http.ResponseWriter, req *http.Reque
 
 func (handler CommentHandler) Get(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
-	id, err := strconv.ParseUint(vars["id"], 10, 64)
+	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
 		zap.L().Error(err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	comment, err := handler.service.GetById(uint(id))
+	comment, err := handler.service.GetById(id)
 	if err != nil {
 		zap.L().Error(err.Error())
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -119,10 +120,10 @@ func (handler CommentHandler) Update(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	updatedComment, err := handler.service.Create(comment)
+	updatedComment, err := handler.service.Update(comment)
 	if err != nil {
 		zap.L().Error(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
@@ -135,14 +136,14 @@ func (handler CommentHandler) Update(w http.ResponseWriter, req *http.Request) {
 
 func (handler CommentHandler) Delete(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
-	id, err := strconv.ParseUint(vars["id"], 10, 64)
+	id, err := strconv.ParseInt(vars["id"], 10, 64)
 	if err != nil {
 		zap.L().Error(err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	err = handler.service.DeleteById(uint(id))
+	err = handler.service.DeleteById(id)
 	if err != nil {
 		zap.L().Error(err.Error())
 		http.Error(w, err.Error(), http.StatusNotFound)

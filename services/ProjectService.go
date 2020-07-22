@@ -30,11 +30,11 @@ func (service ProjectService) Create(project models.ProjectModel) (*models.Proje
 	return newProject, nil
 }
 
-func (service ProjectService) GetById(id uint) (*models.ProjectModel, error) {
+func (service ProjectService) GetById(id int64) (*models.ProjectModel, error) {
 	return service.ProjectRepository.FindById(id)
 }
 
-func (service ProjectService) GetList() ([]models.ProjectModel, error) {
+func (service ProjectService) GetList() ([]*models.ProjectModel, error) {
 	return service.ProjectRepository.FindAll()
 }
 
@@ -42,6 +42,6 @@ func (service ProjectService) Update(project models.ProjectModel) (*models.Proje
 	return service.ProjectRepository.Update(project)
 }
 
-func (service ProjectService) DeleteById(id uint) error {
+func (service ProjectService) DeleteById(id int64) error {
 	return service.ProjectRepository.DeleteById(id)
 }

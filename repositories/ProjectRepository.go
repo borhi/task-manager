@@ -1,52 +1,107 @@
 package repositories
 
-import "task-manager/models"
+import (
+	"errors"
+	"fmt"
+	"task-manager/adapters"
+	"task-manager/models"
+)
 
-//@TODO add db level
 type ProjectRepository struct {
+	adapters.IDbAdapter
 }
 
 type IProjectRepository interface {
 	Add(project models.ProjectModel) (*models.ProjectModel, error)
-	FindById(id uint) (*models.ProjectModel, error)
-	FindAll() ([]models.ProjectModel, error)
+	FindById(id int64) (*models.ProjectModel, error)
+	FindAll() ([]*models.ProjectModel, error)
 	Update(project models.ProjectModel) (*models.ProjectModel, error)
-	DeleteById(id uint) error
+	DeleteById(id int64) error
 }
 
 func (repository ProjectRepository) Add(project models.ProjectModel) (*models.ProjectModel, error) {
-	project.Id = 1
-	return &project, nil
+	rows, err := repository.Query(fmt.Sprintf(
+		"INSERT INTO project (name, description) values ('%s', '%s') RETURNING id, name, description",
+		project.Name, project.Description,
+	))
+	if err != nil {
+		return nil, err
+	}
+
+	rows.Next()
+	newProject := new(models.ProjectModel)
+	if err = rows.Scan(&newProject.Id, &newProject.Name, &newProject.Description); err != nil {
+		return nil, err
+	}
+	return newProject, nil
 }
 
-func (repository ProjectRepository) FindById(id uint) (*models.ProjectModel, error) {
-	project := &models.ProjectModel{
-		Id:          1,
-		Name:        "test",
-		Description: "test",
+func (repository ProjectRepository) FindById(id int64) (*models.ProjectModel, error) {
+	rows, err := repository.Query(fmt.Sprintf("SELECT * FROM project WHERE id = %d", id))
+	if err != nil {
+		return nil, err
+	}
+
+	project := new(models.ProjectModel)
+	rows.Next()
+	if err := rows.Scan(&project.Id, &project.Name, &project.Description); err != nil {
+		return nil, errors.New("not found")
 	}
 
 	return project, nil
 }
 
-func (repository ProjectRepository) FindAll() ([]models.ProjectModel, error) {
-	projects := []models.ProjectModel{models.ProjectModel{
-		Id:          1,
-		Name:        "test",
-		Description: "test",
-	}, models.ProjectModel{
-		Id:          2,
-		Name:        "test2",
-		Description: "test2",
-	}}
+func (repository ProjectRepository) FindAll() ([]*models.ProjectModel, error) {
+	rows, err := repository.Query("SELECT * FROM project")
+	if err != nil {
+		return nil, err
+	}
+
+	projects := make([]*models.ProjectModel, 0)
+	for rows.Next() {
+		project := new(models.ProjectModel)
+		err := rows.Scan(&project.Id, &project.Name, &project.Description)
+		if err != nil {
+			return nil, err
+		}
+		projects = append(projects, project)
+	}
 
 	return projects, nil
 }
 
 func (repository ProjectRepository) Update(project models.ProjectModel) (*models.ProjectModel, error) {
-	return &project, nil
+	rows, err := repository.Query(fmt.Sprintf(
+		"UPDATE project SET name='%s', description='%s' WHERE id=%d RETURNING id, name, description;",
+		project.Name, project.Description, project.Id,
+	))
+	if err != nil {
+		return nil, err
+	}
+
+	updatedProject := new(models.ProjectModel)
+	rows.Next()
+	if err := rows.Scan(&updatedProject.Id, &updatedProject.Name, &updatedProject.Description); err != nil {
+		return nil, errors.New("not found")
+	}
+
+	return updatedProject, nil
 }
 
-func (repository ProjectRepository) DeleteById(id uint) error {
+func (repository ProjectRepository) DeleteById(id int64) error {
+	res, err := repository.Execute(fmt.Sprintf("DELETE FROM project WHERE id=%d", id))
+	if err != nil {
+		return err
+	}
+
+	count, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if count == 0 {
+		return errors.New("not found")
+	}
+
 	return nil
 }
